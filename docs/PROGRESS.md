@@ -9,7 +9,7 @@ Date: 2026-10-29
 - [x] Suppress destructive Payment/Webhook Log UI actions.
 - [x] Stripe async-status check; minimal retained webhook diagnostic metadata and after-commit event dispatch.
 - [x] Test source and Testbench dependency committed; **verified passing in the 2026-10-29 CI run**.
-- [x] [Green CI](https://github.com/fnx-software/subbase-payment/actions/runs/40828622595): 33 PHPUnit tests / 55 assertions; Composer validation, scoped Pint and Composer audit succeeded.
+- [x] [Green CI](https://github.com/fnx-software/subbase-payment/actions/runs/40828948348): 36 PHPUnit tests / 58 assertions; Composer validation, scoped Pint and Composer audit succeeded.
 - [ ] Unique processed webhook event ledger with merchant/tenant scope.
 - [ ] Full verified paid subscription activation and owner isolation.
 - [ ] Exact decimal prices / currency scales.
@@ -30,4 +30,4 @@ The upstream payment fork has 41 pre-existing Laravel Pint formatting violations
 
 - [Draft pull request #2](https://github.com/fnx-software/subbase-payment/pull/2) — branch remains separate from `main` pending consumer integration, full financial verification and release preparation.
 
-- [x] Extracted `CheckoutBillableManager` from the controller for independent consumer testing, with business-owner Gate fixture. Run CI before treating the new tests as verified.
+- [x] Extracted `CheckoutBillableManager` from the controller for independent consumer testing, with business-owner Gate fixture. Verified in CI (including authorized and unauthorized non-User Eloquent billable test cases).
