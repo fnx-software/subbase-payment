@@ -25,7 +25,6 @@ use Nafiswatsiq\SubbasePayment\Data\PaymentRequest;
 use Nafiswatsiq\SubbasePayment\Data\PaymentResult;
 use Nafiswatsiq\SubbasePayment\PaymentManager;
 use Nafiswatsiq\SubbasePayment\Services\LicenseCheckoutService;
-use Nafiswatsiq\SubbasePayment\Services\PaidSubscriptionActivator;
 use Nafiswatsiq\SubbasePayment\Services\VerifiedPaymentProcessor;
 use Nafiswatsiq\SubbasePayment\Tests\TestCase;
 use UnexpectedValueException;
@@ -124,7 +123,7 @@ final class LicensePaymentTest extends TestCase
             $table->softDeletes();
         });
 
-        $root = dirname((new \ReflectionClass(LicenseOrder::class))->getFileName(), 3);
+        $root = dirname((new \ReflectionClass(LicenseOrder::class))->getFileName(), 2);
         foreach (['create_license_catalog_and_providers_table', 'create_license_orders_and_keys_table'] as $migration) {
             (require $root.'/database/migrations/'.$migration.'.php')->up();
         }
