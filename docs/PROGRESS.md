@@ -29,3 +29,5 @@ The upstream payment fork has 41 pre-existing Laravel Pint formatting violations
 ## Review
 
 - [Draft pull request #2](https://github.com/fnx-software/subbase-payment/pull/2) — branch remains separate from `main` pending consumer integration, full financial verification and release preparation.
+
+- [x] Extracted `CheckoutBillableManager` from the controller for independent consumer testing, with business-owner Gate fixture. Run CI before treating the new tests as verified.

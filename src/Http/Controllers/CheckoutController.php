@@ -14,8 +14,6 @@ use Nafiswatsiq\SubbasePayment\Exceptions\PaymentConfigurationException;
 use Nafiswatsiq\SubbasePayment\PaymentManager;
 use Nafiswatsiq\Subbase\Helpers\PlanPriceHelper;
 use Illuminate\Database\Eloquent\Model;
-use Nafiswatsiq\SubbasePayment\Contracts\ResolvesCheckoutBillable;
-use Nafiswatsiq\SubbasePayment\Support\AuthenticatedBillableResolver;
 
 class CheckoutController extends Controller
 {
@@ -266,30 +264,9 @@ class CheckoutController extends Controller
         ]);
     }
 
-    /**
-     * Supports any authorized Eloquent subscription owner, not just User.
-     */
     private function resolveBillable(Request $request): Model
     {
-        $class = config(
-            'subbase-payment.checkout.billable_resolver',
-            AuthenticatedBillableResolver::class,
-        );
-
-        if (! is_string($class) || ! is_a($class, ResolvesCheckoutBillable::class, true)) {
-            throw new PaymentConfigurationException('Checkout billable resolver is invalid.');
-        }
-
-        $billable = app($class)->resolve($request);
-
-        if (! $billable->exists
-            || ! method_exists($billable, 'planSubscriptions')
-            || ! method_exists($billable, 'newPlanSubscription')
-        ) {
-            throw new PaymentConfigurationException('Billable model must be persisted and support subscriptions.');
-        }
-
-        return $billable;
+        return app(\Nafiswatsiq\SubbasePayment\Services\CheckoutBillableManager::class)->resolve($request);
     }
 
     public function returned(Request $request, string $plan, PaymentManager $payments)
