@@ -7,6 +7,7 @@ namespace Nafiswatsiq\SubbasePayment\Services;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Config;
 use RuntimeException;
+use Nafiswatsiq\Subbase\Models\Plan;
 
 /**
  * Activates an authorized checkout's plan only within a verified settlement
@@ -41,7 +42,7 @@ final class PaidSubscriptionActivator
                 continue;
             }
 
-            $probe = new $allowed();
+            $probe = new $allowed;
             if ($type === $allowed || $type === (string) $alias || $type === $probe->getMorphClass()) {
                 $modelClass = $allowed;
 
@@ -61,7 +62,7 @@ final class PaidSubscriptionActivator
             throw new RuntimeException('Subscription owner is unavailable or not subscribable.');
         }
 
-        $planClass = Config::get('subbase.models.plan', \Nafiswatsiq\Subbase\Models\Plan::class);
+        $planClass = Config::get('subbase.models.plan', Plan::class);
         if (! is_string($planClass) || ! is_subclass_of($planClass, Model::class)) {
             throw new RuntimeException('Configured subscription plan model is invalid.');
         }
