@@ -73,6 +73,18 @@ final class VerifiedPaymentProcessorTest extends TestCase
         $this->assertSame(1, DB::table('sb_test_processed_events')->count());
     }
 
+    public function test_late_pending_webhook_does_not_reopen_a_failed_payment(): void
+    {
+        $processor = new VerifiedPaymentProcessor(app(PaidSubscriptionActivator::class));
+
+        $this->assertSame('processed', $processor->handle('stripe', $this->event('failed', 'evt_failed', '25.00')));
+        $this->assertSame('failed', DB::table('sb_test_payments')->value('payment_status'));
+
+        $this->assertSame('processed', $processor->handle('stripe', $this->event('pending', 'evt_stale', '25.00')));
+        $this->assertSame('failed', DB::table('sb_test_payments')->value('payment_status'));
+        $this->assertSame(2, DB::table('sb_test_processed_events')->count());
+    }
+
     public function test_unknown_gateway_transaction_is_not_applied(): void
     {
         $processor = new VerifiedPaymentProcessor(app(PaidSubscriptionActivator::class));

@@ -95,8 +95,13 @@ final class VerifiedPaymentProcessor
                 return 'processed';
             }
 
-            // A stale callback may never undo a previously confirmed payment.
-            if (! $alreadyPaid && $result->status !== 'paid') {
+            // Terminal provider failures must not be reopened by late pending
+            // or approved notifications. A subsequent *verified paid* event is
+            // still permitted to settle a genuinely delayed capture.
+            $terminal = in_array($payment->payment_status, ['paid', 'failed', 'canceled'], true);
+            $stale = $terminal && in_array($result->status, ['pending', 'approved'], true);
+
+            if (! $alreadyPaid && ! $stale && $result->status !== 'paid') {
                 DB::table($paymentTable)->where('id', $payment->id)->update([
                     'payment_status' => $result->status,
                     'webhook_event_id' => $eventId,
