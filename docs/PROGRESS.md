@@ -62,3 +62,8 @@ Read `AGENTS.md`, `docs/INSTALLATION.md`, `docs/BACKLOG.md`, `docs/PROGRESS.md`,
 - [ ] Full PostgreSQL/MySQL and concurrent webhook/checkout tests, money compliance and invoicing, reseller agreement/tax obligations.
 
 For endpoints and setup, see `docs/LICENSE-MARKETPLACE.md` and sibling Subbase's `docs/LICENSING-RESELLERS.md`. PR remains Draft; nothing was deployed to production.
+
+### Latest validated licensing checkpoint
+
+- [x] 51 PHPUnit tests / 126 assertions passed with Composer validate/update, targeted Pint and Composer audit at [GitHub Actions run 40842357476](https://github.com/fnx-software/subbase-payment/actions/runs/40842357476). This is test-environment verification, **not** provider sandbox or production payment certification.
+- [x] Changes and rollout blockers remain tracked in the [Draft PR #2](https://github.com/fnx-software/subbase-payment/pull/2) and the license-marketplace documentation.
