@@ -1,6 +1,6 @@
 {
-    "name": "nafiswatsiq/subbase-payment",
-    "description": "Reusable FNX Software subscription payment and gateway integration package",
+    "name": "fnx-software/subbase-payment",
+    "description": "FNX Software reusable subscription payment gateways for Laravel",
     "type": "library",
     "license": "MIT",
     "keywords": [
@@ -10,7 +10,7 @@
         "payment",
         "billing"
     ],
-    "homepage": "https://github.com/nafiswatsiq/subbase-payment",
+    "homepage": "https://github.com/fnx-software/subbase-payment",
     "authors": [
         {
             "name": "Nafis Watsiq",
@@ -19,9 +19,9 @@
     ],
     "require": {
         "php": "^8.2",
-        "nafiswatsiq/subbase": "dev-feat/universal-billing-foundation",
         "spatie/laravel-package-tools": "^1.16",
-        "ext-bcmath": "*"
+        "ext-bcmath": "*",
+        "fnx-software/subbase": "dev-feat/universal-billing-foundation"
     },
     "require-dev": {
         "phpunit/phpunit": "^12.5",
@@ -57,5 +57,9 @@
             "url": "https://github.com/fnx-software/subbase",
             "canonical": true
         }
-    ]
+    ],
+    "support": {
+        "source": "https://github.com/fnx-software/subbase-payment",
+        "issues": "https://github.com/fnx-software/subbase-payment/pulls"
+    }
 }
