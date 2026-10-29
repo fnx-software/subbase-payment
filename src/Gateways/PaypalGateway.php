@@ -159,6 +159,10 @@ class PaypalGateway implements PaymentGatewayInterface, CapturesPayments, Valida
             throw new PaymentConfigurationException('PayPal webhook ID is not configured.');
         }
 
+        // The internal signed raw request is not a PayPal webhook_event field.
+        $verifiedEvent = $payload;
+        unset($verifiedEvent['_raw_body']);
+
         $response = $this->api()->post('/v1/notifications/verify-webhook-signature', [
             'auth_algo' => $headers['paypal-auth-algo'] ?? '',
             'cert_url' => $headers['paypal-cert-url'] ?? '',
@@ -166,7 +170,7 @@ class PaypalGateway implements PaymentGatewayInterface, CapturesPayments, Valida
             'transmission_sig' => $headers['paypal-transmission-sig'] ?? '',
             'transmission_time' => $headers['paypal-transmission-time'] ?? '',
             'webhook_id' => $webhookId,
-            'webhook_event' => $payload,
+            'webhook_event' => $verifiedEvent,
         ])->throw();
 
         if ($response->json('verification_status') !== 'SUCCESS') {

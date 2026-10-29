@@ -206,6 +206,11 @@ class PaddleGateway implements PaymentGatewayInterface, ValidatesConfiguration
             throw new InvalidWebhookSignatureException('Malformed Paddle-Signature header.');
         }
 
+        // Reject replayed signatures even if their HMAC is mathematically valid.
+        if (! ctype_digit((string) $ts) || abs(time() - (int) $ts) > 300) {
+            throw new InvalidWebhookSignatureException('Paddle signature timestamp is outside the replay window.');
+        }
+
         $rawBody = $payload['_raw_body'] ?? json_encode($payload);
         $signedPayload = $ts.':'.$rawBody;
         $expectedH1 = hash_hmac('sha256', $signedPayload, $secretKey);
