@@ -87,15 +87,21 @@ class StripeGateway implements PaymentGatewayInterface, CapturesPayments, Valida
         $this->verifyWebhook($payload, $headers);
 
         $eventType = (string) ($payload['type'] ?? '');
-        $status = match ($eventType) {
-            'checkout.session.completed' => 'paid',
-            'checkout.session.expired' => 'failed',
-            'charge.refunded' => 'canceled',
-            default => 'pending',
-        };
-
         $object = $payload['data']['object'] ?? [];
         $isCheckoutSession = ($object['object'] ?? '') === 'checkout.session';
+
+        // Some payment methods complete checkout before the funds settle.
+        // Only verified paid status or async success can finalize a payment.
+        $status = match ($eventType) {
+            'checkout.session.completed' => ($object['payment_status'] ?? null) === 'paid'
+                ? 'paid'
+                : 'pending',
+            'checkout.session.async_payment_succeeded' => 'paid',
+            'checkout.session.async_payment_failed' => 'failed',
+            'checkout.session.expired' => 'canceled',
+            // Refunds and disputes require their own settlement ledger.
+            default => 'pending',
+        };
         $transactionId = $isCheckoutSession ? ($object['id'] ?? null) : null;
 
         return new PaymentResult(

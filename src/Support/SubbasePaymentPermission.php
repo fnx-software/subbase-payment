@@ -4,47 +4,38 @@ declare(strict_types=1);
 
 namespace Nafiswatsiq\SubbasePayment\Support;
 
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
 
+/**
+ * Fail closed through native Laravel Gate; Spatie Permission remains optional.
+ */
 final class SubbasePaymentPermission
 {
-    public static function allows(?string $permission, ?string $ability = null, ?string $subject = null): bool
-    {
-        $permission = trim((string) $permission);
+    public static function allows(
+        ?string $permission,
+        ?string $ability = null,
+        ?string $subject = null,
+        ?Authenticatable $actor = null,
+    ): bool {
+        $actor ??= Auth::user();
 
-        if ($permission === '') {
-            if (! class_exists('Spatie\\Permission\\PermissionRegistrar')) {
-                return true;
-            }
-
-            if ($ability === null || $subject === null) {
-                return true;
-            }
-
-            $permission = static::buildShieldPermissionName($ability, $subject);
-        }
-
-        if (! class_exists('Spatie\\Permission\\PermissionRegistrar')) {
-            return true;
-        }
-
-        return static::can($permission);
-    }
-
-    private static function can(string $permission): bool
-    {
-        $user = Auth::user();
-
-        if ($user === null) {
+        if (! $actor instanceof Authenticatable) {
             return false;
         }
 
-        return (bool) $user->can($permission);
-    }
+        $permission = trim((string) $permission);
 
-    private static function buildShieldPermissionName(string $ability, string $subject): string
-    {
-        return Str::studly($ability).':'.class_basename($subject);
+        if ($permission === '') {
+            if (blank($ability) || blank($subject)) {
+                return false;
+            }
+
+            $permission = Str::studly($ability).':'.class_basename($subject);
+        }
+
+        return Gate::forUser($actor)->allows($permission);
     }
 }

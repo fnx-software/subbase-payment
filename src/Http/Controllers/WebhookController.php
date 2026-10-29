@@ -27,8 +27,13 @@ class WebhookController extends Controller
             'event_id' => $rawPayload['id'] ?? $rawPayload['event_id'] ?? null,
             'event_type' => $rawPayload['event_type'] ?? $rawPayload['type'] ?? null,
             'status' => 'received',
-            'payload' => $rawPayload,
-            'headers' => $rawHeaders,
+            // Never store raw body, authentication headers or customer data.
+            // Retain only whitelisted event metadata for diagnostics.
+            'payload' => [
+                'event_id' => $rawPayload['id'] ?? $rawPayload['event_id'] ?? null,
+                'event_type' => $rawPayload['event_type'] ?? $rawPayload['type'] ?? null,
+            ],
+            'headers' => [],
         ]);
 
         try {
@@ -126,7 +131,9 @@ class WebhookController extends Controller
             if ($result->status === 'paid' && ! $isPaid) {
                 $updatedRecord = DB::table($table)->where('id', $payment->id)->first();
                 $metadata = is_string($updatedRecord->metadata ?? null) ? (json_decode($updatedRecord->metadata, true) ?? []) : [];
-                event(new \Nafiswatsiq\SubbasePayment\Events\PaymentReceived($updatedRecord, $metadata));
+                DB::afterCommit(static function () use ($updatedRecord, $metadata): void {
+                    event(new \Nafiswatsiq\SubbasePayment\Events\PaymentReceived($updatedRecord, $metadata));
+                });
             }
 
             $log->update(['status' => 'verified']);

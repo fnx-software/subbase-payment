@@ -6,6 +6,9 @@ return [
     'checkout' => [
         'path' => 'checkout',
         'middleware' => ['web'],
+        // Resolve the subscription owner; override in a host app to bill a
+        // tenant, school, organization or other Eloquent model.
+        'billable_resolver' => \Nafiswatsiq\SubbasePayment\Support\AuthenticatedBillableResolver::class,
         'return_url' => null,
         'cancel_url' => null,
     ],

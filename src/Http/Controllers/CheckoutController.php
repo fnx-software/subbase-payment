@@ -13,6 +13,9 @@ use Nafiswatsiq\SubbasePayment\Contracts\ValidatesConfiguration;
 use Nafiswatsiq\SubbasePayment\Exceptions\PaymentConfigurationException;
 use Nafiswatsiq\SubbasePayment\PaymentManager;
 use Nafiswatsiq\Subbase\Helpers\PlanPriceHelper;
+use Illuminate\Database\Eloquent\Model;
+use Nafiswatsiq\SubbasePayment\Contracts\ResolvesCheckoutBillable;
+use Nafiswatsiq\SubbasePayment\Support\AuthenticatedBillableResolver;
 
 class CheckoutController extends Controller
 {
@@ -70,10 +73,11 @@ class CheckoutController extends Controller
         }
 
         $user = Auth::user();
+        $billable = $user ? $this->resolveBillable(request()) : null;
         $subscriptionAction = 'new';
 
-        if ($user && method_exists($user, 'planSubscriptions')) {
-            $activeSub = $user->planSubscriptions()->get()->filter(fn ($sub) => $sub->active())->first();
+        if ($billable && method_exists($billable, 'planSubscriptions')) {
+            $activeSub = $billable->planSubscriptions()->get()->filter(fn ($sub) => $sub->active())->first();
             if ($activeSub) {
                 $samePlan = (string) $activeSub->plan_id === (string) $plan->getKey();
                 $subscriptionAction = $samePlan && $isFreePlan ? 'active' : ($samePlan ? 'renew' : 'switch');
@@ -104,18 +108,20 @@ class CheckoutController extends Controller
             'email' => ['required', 'email', 'max:255'],
         ]);
 
+        $billable = $this->resolveBillable($request);
+
         $planModel = config('subbase.models.plan', \Nafiswatsiq\Subbase\Models\Plan::class);
         $plan = $planModel::query()->where('slug', $plan)->active()->firstOrFail();
         $currency = $planModel::currencyFromLocale(app()->getLocale());
         $pricing = PlanPriceHelper::resolveWithDiscounts($plan, $currency);
 
         if ((float) $pricing['final_amount'] <= 0) {
-            return $this->activateFreePlan($user, $plan, $currency, $pricing);
+            return $this->activateFreePlan($billable, $plan, $currency, $pricing);
         }
 
         $subscriptionAction = 'new';
-        if (method_exists($user, 'planSubscriptions')) {
-            $activeSub = $user->planSubscriptions()->get()->filter(fn ($sub) => $sub->active())->first();
+        if (method_exists($billable, 'planSubscriptions')) {
+            $activeSub = $billable->planSubscriptions()->get()->filter(fn ($sub) => $sub->active())->first();
             if ($activeSub) {
                 $subscriptionAction = (string) $activeSub->plan_id === (string) $plan->getKey() ? 'renew' : 'switch';
             }
@@ -151,6 +157,8 @@ class CheckoutController extends Controller
                 'plan_id' => $plan->getKey(),
                 'plan_slug' => $plan->slug,
                 'user_id' => $user->getAuthIdentifier(),
+                'billable_type' => $billable->getMorphClass(),
+                'billable_id' => (string) $billable->getKey(),
                 'subscription_action' => $subscriptionAction,
             ]),
             'created_at' => now(),
@@ -214,7 +222,9 @@ class CheckoutController extends Controller
                 'metadata' => json_encode([
                     'plan_id' => $plan->getKey(),
                     'plan_slug' => $plan->slug,
-                    'user_id' => $user->getAuthIdentifier(),
+                    'user_id' => Auth::id(),
+                    'billable_type' => $user->getMorphClass(),
+                    'billable_id' => (string) $user->getKey(),
                     'subscription_action' => 'free',
                 ]),
                 'created_at' => now(),
@@ -254,6 +264,32 @@ class CheckoutController extends Controller
             'status' => 'success',
             'redirectUrl' => null,
         ]);
+    }
+
+    /**
+     * Supports any authorized Eloquent subscription owner, not just User.
+     */
+    private function resolveBillable(Request $request): Model
+    {
+        $class = config(
+            'subbase-payment.checkout.billable_resolver',
+            AuthenticatedBillableResolver::class,
+        );
+
+        if (! is_string($class) || ! is_a($class, ResolvesCheckoutBillable::class, true)) {
+            throw new PaymentConfigurationException('Checkout billable resolver is invalid.');
+        }
+
+        $billable = app($class)->resolve($request);
+
+        if (! $billable->exists
+            || ! method_exists($billable, 'planSubscriptions')
+            || ! method_exists($billable, 'newPlanSubscription')
+        ) {
+            throw new PaymentConfigurationException('Billable model must be persisted and support subscriptions.');
+        }
+
+        return $billable;
     }
 
     public function returned(Request $request, string $plan, PaymentManager $payments)

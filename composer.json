@@ -1,44 +1,53 @@
 {
-  "name": "nafiswatsiq/subbase-payment",
-  "description": "Payment gateway integration plugin for Subbase subscriptions",
-  "type": "library",
-  "license": "MIT",
-  "keywords": ["filament", "laravel", "subscription", "payment", "billing"],
-  "homepage": "https://github.com/nafiswatsiq/subbase-payment",
-  "authors": [
-    {
-      "name": "Nafis Watsiq",
-      "email": "nafiswatsiq@gmail.com"
-    }
-  ],
-  "require": {
-    "php": "^8.2",
-    "nafiswatsiq/subbase": "^1.3",
-    "spatie/laravel-package-tools": "^1.16"
-  },
-  "require-dev": {
-    "phpunit/phpunit": "^12.5"
-  },
-  "autoload": {
-    "psr-4": {
-      "Nafiswatsiq\\SubbasePayment\\": "src/"
-    }
-  },
-  "autoload-dev": {
-    "psr-4": {
-      "Nafiswatsiq\\SubbasePayment\\Tests\\": "tests/"
-    }
-  },
-  "extra": {
-    "laravel": {
-      "providers": [
-        "Nafiswatsiq\\SubbasePayment\\SubbasePaymentServiceProvider"
-      ]
-    }
-  },
-  "scripts": {
-    "test": "phpunit"
-  },
-  "minimum-stability": "stable",
-  "prefer-stable": true
+    "name": "nafiswatsiq/subbase-payment",
+    "description": "Payment gateway integration plugin for Subbase subscriptions",
+    "type": "library",
+    "license": "MIT",
+    "keywords": [
+        "filament",
+        "laravel",
+        "subscription",
+        "payment",
+        "billing"
+    ],
+    "homepage": "https://github.com/nafiswatsiq/subbase-payment",
+    "authors": [
+        {
+            "name": "Nafis Watsiq",
+            "email": "nafiswatsiq@gmail.com"
+        }
+    ],
+    "require": {
+        "php": "^8.2",
+        "nafiswatsiq/subbase": "^1.3",
+        "spatie/laravel-package-tools": "^1.16"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^12.5",
+        "orchestra/testbench": "^11.3",
+        "laravel/pint": "^1.27"
+    },
+    "autoload": {
+        "psr-4": {
+            "Nafiswatsiq\\SubbasePayment\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Nafiswatsiq\\SubbasePayment\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Nafiswatsiq\\SubbasePayment\\SubbasePaymentServiceProvider"
+            ]
+        }
+    },
+    "scripts": {
+        "test": "phpunit",
+        "lint": "pint --test"
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
 }
