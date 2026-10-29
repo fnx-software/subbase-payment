@@ -20,6 +20,7 @@ use Nafiswatsiq\Subbase\Services\LicenseProviderDashboard;
 use Nafiswatsiq\Subbase\Services\LicenseProviderService;
 use Nafiswatsiq\Subbase\Services\LicenseRedemptionService;
 use Nafiswatsiq\Subbase\Services\LicenseResaleService;
+use Nafiswatsiq\Subbase\Support\SubbaseTenancy;
 use Nafiswatsiq\SubbasePayment\PaymentManager;
 use Nafiswatsiq\SubbasePayment\Services\CheckoutBillableManager;
 use Nafiswatsiq\SubbasePayment\Services\LicenseCheckoutService;
@@ -137,6 +138,10 @@ final class LicenseMarketplaceController extends Controller
     public function show(Request $request, string $order): JsonResponse
     {
         $record = LicenseOrder::query()->where('public_id', $order)->firstOrFail();
+        if (! SubbaseTenancy::allows($record, 'view', $request->user())) {
+            throw new AuthorizationException('This order is outside your authorized tenant.');
+        }
+
         Gate::forUser($request->user())->authorize('viewLicenseOrder', $record);
 
         return response()->json([
