@@ -13,6 +13,8 @@ return [
         'cancel_url' => null,
     ],
 
+    'currency_scales' => [],
+
     'mail' => [
         'send_invoice' => env('SUBBASE_PAYMENT_SEND_INVOICE', false),
     ],
@@ -20,6 +22,7 @@ return [
     'tables' => [
         'subscription_payments' => 'subscription_payments',
         'payment_webhook_logs' => 'payment_webhook_logs',
+        'processed_payment_events' => 'subbase_processed_payment_events',
     ],
 
     'permissions' => [

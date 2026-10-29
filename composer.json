@@ -20,7 +20,8 @@
     "require": {
         "php": "^8.2",
         "nafiswatsiq/subbase": "^1.3",
-        "spatie/laravel-package-tools": "^1.16"
+        "spatie/laravel-package-tools": "^1.16",
+        "ext-bcmath": "*"
     },
     "require-dev": {
         "phpunit/phpunit": "^12.5",

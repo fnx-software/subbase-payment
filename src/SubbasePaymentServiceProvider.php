@@ -33,6 +33,8 @@ class SubbasePaymentServiceProvider extends PackageServiceProvider
             ->hasMigrations([
                 'create_subscription_payments_table',
                 'create_payment_webhook_logs_table',
+                'add_billable_to_subscription_payments_table',
+                'create_processed_payment_events_table',
             ]);
     }
 

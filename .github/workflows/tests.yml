@@ -13,7 +13,7 @@ jobs:
       - uses: shivammathur/setup-php@v2
         with:
           php-version: '8.4'
-          extensions: mbstring, dom, sqlite3, pdo_sqlite
+          extensions: mbstring, dom, sqlite3, pdo_sqlite, bcmath
           coverage: none
           tools: composer:v2
       - run: composer validate --no-check-publish --strict
@@ -21,5 +21,5 @@ jobs:
       - run: vendor/bin/phpunit
       # Original upstream contains pre-existing formatting differences.
       # Check the new stable files first; full-repo formatting follows separately.
-      - run: vendor/bin/pint --test src/Support/SubbasePaymentPermission.php src/Support/AuthenticatedBillableResolver.php src/Contracts/ResolvesCheckoutBillable.php src/Services/CheckoutBillableManager.php tests/Checkout/CheckoutBillableManagerTest.php tests/Authorization/SubbasePaymentPermissionTest.php tests/Checkout/AuthenticatedBillableResolverTest.php tests/Gateways/StripeWebhookStatusTest.php
+      - run: vendor/bin/pint --test src/Support/SubbasePaymentPermission.php src/Support/AuthenticatedBillableResolver.php src/Contracts/ResolvesCheckoutBillable.php src/Services/CheckoutBillableManager.php tests/Checkout/CheckoutBillableManagerTest.php tests/Authorization/SubbasePaymentPermissionTest.php tests/Checkout/AuthenticatedBillableResolverTest.php tests/Gateways/StripeWebhookStatusTest.php src/Support/GatewayMoney.php tests/Money/GatewayMoneyTest.php
       - run: composer audit --no-dev
