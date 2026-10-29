@@ -5,9 +5,8 @@ declare(strict_types=1);
 namespace Nafiswatsiq\SubbasePayment\Tests\Checkout;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Foundation\Auth\User;
-use RuntimeException;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Foundation\Auth\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Laravelcm\Subscriptions\Traits\HasPlanSubscriptions;
@@ -17,6 +16,7 @@ use Nafiswatsiq\SubbasePayment\Data\PaymentResult;
 use Nafiswatsiq\SubbasePayment\Services\PaidSubscriptionActivator;
 use Nafiswatsiq\SubbasePayment\Services\VerifiedPaymentProcessor;
 use Nafiswatsiq\SubbasePayment\Tests\TestCase;
+use RuntimeException;
 
 final class BillableExampleOrganization extends Model
 {

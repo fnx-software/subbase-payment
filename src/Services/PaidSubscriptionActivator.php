@@ -6,8 +6,8 @@ namespace Nafiswatsiq\SubbasePayment\Services;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Config;
-use RuntimeException;
 use Nafiswatsiq\Subbase\Models\Plan;
+use RuntimeException;
 
 /**
  * Activates an authorized checkout's plan only within a verified settlement

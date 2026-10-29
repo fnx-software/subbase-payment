@@ -18,13 +18,8 @@ jobs:
           tools: composer:v2
       - run: composer validate --no-check-publish --strict
       - run: composer update --no-interaction --prefer-dist
-      - name: Inspect Pint normalization for remaining legacy integration files
-        run: |
-          vendor/bin/pint src/Services/PaidSubscriptionActivator.php tests/Checkout/PaidOrganizationSettlementTest.php src/Support/PaymentTenancy.php src/Contracts/PaymentTenantAccess.php tests/Authorization/PaymentTenancyTest.php
-          git diff -- src/Services/PaidSubscriptionActivator.php tests/Checkout/PaidOrganizationSettlementTest.php
-          git diff --quiet -- src/Services/PaidSubscriptionActivator.php tests/Checkout/PaidOrganizationSettlementTest.php
       - run: vendor/bin/phpunit
       # Original upstream contains pre-existing formatting differences.
       # Check the new stable files first; full-repo formatting follows separately.
-      - run: vendor/bin/pint --test src/Support/SubbasePaymentPermission.php src/Support/AuthenticatedBillableResolver.php src/Contracts/ResolvesCheckoutBillable.php src/Services/CheckoutBillableManager.php tests/Checkout/CheckoutBillableManagerTest.php tests/Authorization/SubbasePaymentPermissionTest.php tests/Checkout/AuthenticatedBillableResolverTest.php tests/Gateways/StripeWebhookStatusTest.php src/Support/GatewayMoney.php tests/Money/GatewayMoneyTest.php src/Services/PaidSubscriptionActivator.php src/Services/VerifiedPaymentProcessor.php tests/Checkout/VerifiedPaymentProcessorTest.php tests/Checkout/PaidOrganizationSettlementTest.php
+      - run: vendor/bin/pint --test src/Support/SubbasePaymentPermission.php src/Support/AuthenticatedBillableResolver.php src/Contracts/ResolvesCheckoutBillable.php src/Services/CheckoutBillableManager.php tests/Checkout/CheckoutBillableManagerTest.php tests/Authorization/SubbasePaymentPermissionTest.php tests/Checkout/AuthenticatedBillableResolverTest.php tests/Gateways/StripeWebhookStatusTest.php src/Support/GatewayMoney.php tests/Money/GatewayMoneyTest.php src/Services/PaidSubscriptionActivator.php src/Services/VerifiedPaymentProcessor.php tests/Checkout/VerifiedPaymentProcessorTest.php tests/Checkout/PaidOrganizationSettlementTest.php src/Support/PaymentTenancy.php src/Contracts/PaymentTenantAccess.php tests/Authorization/PaymentTenancyTest.php
       - run: composer audit --no-dev
