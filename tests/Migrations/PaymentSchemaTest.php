@@ -49,7 +49,7 @@ final class PaymentSchemaTest extends TestCase
         $record = DB::table('subscription_payments')->find($id);
         $this->assertSame('organization', $record->billable_type);
         $this->assertSame('7', $record->billable_id);
-        $this->assertEqualsWithDelta(1.234, (float) $record->amount, 0.00001);
+        $this->assertSame(0, bccomp((string) $record->amount, '1.234', 4));
 
         $this->expectException(QueryException::class);
         DB::table('subbase_processed_payment_events')->insert([
