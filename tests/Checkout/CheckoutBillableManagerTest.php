@@ -47,8 +47,7 @@ final class CheckoutBillableManagerTest extends TestCase
         $owner = new User;
         $owner->name = 'owner';
 
-        Gate::define('subscribe-to-business', fn (User $actor, Model $record): bool => 
-            $actor->name === 'owner' && $record->getKey() === 11);
+        Gate::define('subscribe-to-business', fn (User $actor, Model $record): bool => $actor->name === 'owner' && $record->getKey() === 11);
 
         Config::set('subbase-payment.checkout.billable_resolver', AuthorizedBusinessResolver::class);
 
@@ -70,8 +69,7 @@ final class CheckoutBillableManagerTest extends TestCase
         $actor = new User;
         $actor->name = 'outsider';
 
-        Gate::define('subscribe-to-business', fn (User $user, Model $record): bool =>
-            $user->name === 'owner' && $record->getKey() === 11);
+        Gate::define('subscribe-to-business', fn (User $user, Model $record): bool => $user->name === 'owner' && $record->getKey() === 11);
 
         Config::set('subbase-payment.checkout.billable_resolver', AuthorizedBusinessResolver::class);
 
