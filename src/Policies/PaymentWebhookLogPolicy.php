@@ -35,12 +35,12 @@ class PaymentWebhookLogPolicy
 
     public function delete(AuthUser $authUser, PaymentWebhookLog $paymentWebhookLog): bool
     {
-        return SubbasePaymentPermission::allows(config('subbase-payment.permissions.payment_webhook_log'), 'delete', PaymentWebhookLog::class, $authUser);
+        return false;
     }
 
     public function deleteAny(AuthUser $authUser): bool
     {
-        return SubbasePaymentPermission::allows(config('subbase-payment.permissions.payment_webhook_log'), 'deleteAny', PaymentWebhookLog::class, $authUser);
+        return false;
     }
 
     public function restore(AuthUser $authUser, PaymentWebhookLog $paymentWebhookLog): bool
@@ -50,12 +50,12 @@ class PaymentWebhookLogPolicy
 
     public function forceDelete(AuthUser $authUser, PaymentWebhookLog $paymentWebhookLog): bool
     {
-        return SubbasePaymentPermission::allows(config('subbase-payment.permissions.payment_webhook_log'), 'forceDelete', PaymentWebhookLog::class, $authUser);
+        return false;
     }
 
     public function forceDeleteAny(AuthUser $authUser): bool
     {
-        return SubbasePaymentPermission::allows(config('subbase-payment.permissions.payment_webhook_log'), 'forceDeleteAny', PaymentWebhookLog::class, $authUser);
+        return false;
     }
 
     public function restoreAny(AuthUser $authUser): bool

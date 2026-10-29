@@ -47,12 +47,13 @@ class SubscriptionPaymentResource extends Resource
 
     public static function canDelete(Model $record): bool
     {
-        return SubbasePaymentPermission::allows(config('subbase-payment.permissions.subscription_payment'), 'delete', static::getModel());
+        // Financial transaction and audit records are append-only.
+        return false;
     }
 
     public static function canDeleteAny(): bool
     {
-        return SubbasePaymentPermission::allows(config('subbase-payment.permissions.subscription_payment'), 'deleteAny', static::getModel());
+        return false;
     }
 
     public static function canView(Model $record): bool

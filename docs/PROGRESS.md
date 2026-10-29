@@ -1,0 +1,23 @@
+# Subbase Payment — development progress
+
+Date: 2026-10-29
+- [x] Fork identified: `fnx-software/subbase-payment`; upstream `nafiswatsiq/subbase-payment`.
+- [x] Branch: `feat/universal-payment-foundation`, isolated from `main`.
+- [x] Native Laravel Gate fail-closed helper and explicit policy actor.
+- [x] `ResolvesCheckoutBillable` / default authenticated user resolver; checkout can resolve custom persisted Eloquent billable.
+- [x] Paid checkout metadata includes billable morph type/key; legacy user metadata retained.
+- [x] Suppress destructive Payment/Webhook Log UI actions.
+- [x] Stripe async-status check; minimal retained webhook diagnostic metadata and after-commit event dispatch.
+- [x] Test source and Testbench dependency committed; **not verified passing**.
+- [ ] Verified green CI and Composer dependency audit.
+- [ ] Unique processed webhook event ledger with merchant/tenant scope.
+- [ ] Full verified paid subscription activation and owner isolation.
+- [ ] Exact decimal prices / currency scales.
+- [ ] Reconciliation, refunds, disputes and retry-safe subscription cycle.
+- [ ] Gateway integration with verified sandbox + live account.
+- [ ] Stable `fnx-software/*` Composer package names, tags and upgrade manual.
+- [ ] Multi-tenant Filament resources query-scoped, role/policy integration, cross-tenant tests.
+
+## Continued development
+
+Read `docs/UNIVERSAL-PAYMENTS.md` and `docs/PROGRESS.md` before implementation. Keep package independent of Fenix. Update tests, changelog and progress on every PR. Do not merge this branch into main until compatibility and security tests have passed.

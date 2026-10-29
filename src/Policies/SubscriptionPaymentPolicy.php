@@ -35,12 +35,12 @@ class SubscriptionPaymentPolicy
 
     public function delete(AuthUser $authUser, SubscriptionPayment $subscriptionPayment): bool
     {
-        return SubbasePaymentPermission::allows(config('subbase-payment.permissions.subscription_payment'), 'delete', SubscriptionPayment::class, $authUser);
+        return false;
     }
 
     public function deleteAny(AuthUser $authUser): bool
     {
-        return SubbasePaymentPermission::allows(config('subbase-payment.permissions.subscription_payment'), 'deleteAny', SubscriptionPayment::class, $authUser);
+        return false;
     }
 
     public function restore(AuthUser $authUser, SubscriptionPayment $subscriptionPayment): bool
@@ -50,12 +50,12 @@ class SubscriptionPaymentPolicy
 
     public function forceDelete(AuthUser $authUser, SubscriptionPayment $subscriptionPayment): bool
     {
-        return SubbasePaymentPermission::allows(config('subbase-payment.permissions.subscription_payment'), 'forceDelete', SubscriptionPayment::class, $authUser);
+        return false;
     }
 
     public function forceDeleteAny(AuthUser $authUser): bool
     {
-        return SubbasePaymentPermission::allows(config('subbase-payment.permissions.subscription_payment'), 'forceDeleteAny', SubscriptionPayment::class, $authUser);
+        return false;
     }
 
     public function restoreAny(AuthUser $authUser): bool

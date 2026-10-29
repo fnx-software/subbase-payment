@@ -47,12 +47,13 @@ class PaymentWebhookLogResource extends Resource
 
     public static function canDelete(Model $record): bool
     {
-        return SubbasePaymentPermission::allows(config('subbase-payment.permissions.payment_webhook_log'), 'delete', static::getModel());
+        // Financial transaction and audit records are append-only.
+        return false;
     }
 
     public static function canDeleteAny(): bool
     {
-        return SubbasePaymentPermission::allows(config('subbase-payment.permissions.payment_webhook_log'), 'deleteAny', static::getModel());
+        return false;
     }
 
     public static function canView(Model $record): bool

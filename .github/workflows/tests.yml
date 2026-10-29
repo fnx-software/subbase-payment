@@ -1,0 +1,23 @@
+name: Package Tests
+on:
+  push:
+    branches: [main, 'feat/**', 'fix/**']
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: mbstring, dom, sqlite3, pdo_sqlite
+          coverage: none
+          tools: composer:v2
+      - run: composer validate --no-check-publish --strict
+      - run: composer update --no-interaction --prefer-dist
+      - run: vendor/bin/phpunit
+      - run: vendor/bin/pint --test
+      - run: composer audit --no-dev

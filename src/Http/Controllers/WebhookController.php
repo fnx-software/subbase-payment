@@ -51,14 +51,14 @@ class WebhookController extends Controller
         } catch (PaymentConfigurationException $e) {
             $log->update([
                 'status' => 'failed',
-                'error_message' => 'Payment configuration error: ' . $e->getMessage(),
+                'error_message' => 'Payment gateway configuration error.',
             ]);
 
-            return response()->json(['message' => 'Payment configuration error: ' . $e->getMessage()], 500);
+            return response()->json(['message' => 'Payment gateway configuration error.'], 500);
         } catch (\Throwable $e) {
             $log->update([
                 'status' => 'failed',
-                'error_message' => $e->getMessage(),
+                'error_message' => 'Payment gateway processing failed.',
             ]);
 
             throw $e;
