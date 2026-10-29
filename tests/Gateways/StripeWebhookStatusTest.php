@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Nafiswatsiq\SubbasePayment\Tests\Gateways;
 
 use Illuminate\Support\Facades\Config;
-use Nafiswatsiq\SubbasePayment\Gateways\StripeGateway;
 use Nafiswatsiq\SubbasePayment\Data\PaymentResult;
+use Nafiswatsiq\SubbasePayment\Gateways\StripeGateway;
 use Nafiswatsiq\SubbasePayment\Tests\TestCase;
 
 final class StripeWebhookStatusTest extends TestCase
