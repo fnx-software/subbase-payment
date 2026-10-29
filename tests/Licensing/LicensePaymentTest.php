@@ -124,7 +124,7 @@ final class LicensePaymentTest extends TestCase
         });
 
         $root = dirname((new \ReflectionClass(LicenseOrder::class))->getFileName(), 3);
-        foreach (['create_license_catalog_and_providers_table', 'create_license_orders_and_keys_table'] as $migration) {
+        foreach (['create_license_catalog_and_providers_table', 'create_license_orders_and_keys_table', 'add_license_order_contract_snapshots_table'] as $migration) {
             (require $root.'/database/migrations/'.$migration.'.php')->up();
         }
 
