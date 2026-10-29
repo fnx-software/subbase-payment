@@ -10,6 +10,8 @@ use Nafiswatsiq\SubbasePayment\Filament\Resources\PaymentWebhookLogs\Schemas\Pay
 use Nafiswatsiq\SubbasePayment\Filament\Resources\PaymentWebhookLogs\Tables\PaymentWebhookLogsTable;
 use Nafiswatsiq\SubbasePayment\Models\PaymentWebhookLog;
 use Nafiswatsiq\SubbasePayment\Support\SubbasePaymentPermission;
+use Nafiswatsiq\SubbasePayment\Support\PaymentTenancy;
+use Illuminate\Database\Eloquent\Builder;
 use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
@@ -58,7 +60,7 @@ class PaymentWebhookLogResource extends Resource
 
     public static function canView(Model $record): bool
     {
-        return SubbasePaymentPermission::allows(config('subbase-payment.permissions.payment_webhook_log'), 'view', static::getModel());
+        return SubbasePaymentPermission::allows(config('subbase-payment.permissions.payment_webhook_log'), 'view', static::getModel(), null, $record);
     }
 
     public static function getNavigationLabel(): string
@@ -79,6 +81,16 @@ class PaymentWebhookLogResource extends Resource
     public static function table(Table $table): Table
     {
         return PaymentWebhookLogsTable::configure($table);
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return PaymentTenancy::scope(parent::getEloquentQuery());
+    }
+
+    public static function getRecordRouteBindingEloquentQuery(): Builder
+    {
+        return PaymentTenancy::scope(parent::getRecordRouteBindingEloquentQuery());
     }
 
     public static function getPages(): array

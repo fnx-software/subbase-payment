@@ -20,7 +20,7 @@ class SubscriptionPaymentPolicy
 
     public function view(AuthUser $authUser, SubscriptionPayment $subscriptionPayment): bool
     {
-        return SubbasePaymentPermission::allows(config('subbase-payment.permissions.subscription_payment'), 'view', SubscriptionPayment::class, $authUser);
+        return SubbasePaymentPermission::allows(config('subbase-payment.permissions.subscription_payment'), 'view', SubscriptionPayment::class, $authUser, $subscriptionPayment);
     }
 
     public function create(AuthUser $authUser): bool

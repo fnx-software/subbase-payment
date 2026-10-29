@@ -20,7 +20,7 @@ class PaymentWebhookLogPolicy
 
     public function view(AuthUser $authUser, PaymentWebhookLog $paymentWebhookLog): bool
     {
-        return SubbasePaymentPermission::allows(config('subbase-payment.permissions.payment_webhook_log'), 'view', PaymentWebhookLog::class, $authUser);
+        return SubbasePaymentPermission::allows(config('subbase-payment.permissions.payment_webhook_log'), 'view', PaymentWebhookLog::class, $authUser, $paymentWebhookLog);
     }
 
     public function create(AuthUser $authUser): bool
