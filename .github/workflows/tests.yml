@@ -15,7 +15,7 @@ jobs:
         with:
           repository: fnx-software/subbase
           ref: feat/universal-billing-foundation
-          path: tests/_packages/subbase
+          path: _packages/subbase
       - uses: shivammathur/setup-php@v2
         with:
           php-version: '8.4'
@@ -25,7 +25,7 @@ jobs:
       - run: composer validate --no-check-publish --strict
       - name: Resolve local cross-fork package under its new Composer identity
         run: |
-          composer config repositories.fnx-dev-subbase --json '{"type":"path","url":"tests/_packages/subbase","options":{"symlink":false,"versions":{"fnx-software/subbase":"dev-feat/universal-billing-foundation"}}}'
+          composer config repositories.fnx-dev-subbase --json '{"type":"path","url":"_packages/subbase","options":{"symlink":false,"versions":{"fnx-software/subbase":"dev-feat/universal-billing-foundation"}}}'
       - run: composer update --no-interaction --prefer-dist
       - run: vendor/bin/phpunit
       # Original upstream contains pre-existing formatting differences.
