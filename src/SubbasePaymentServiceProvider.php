@@ -35,6 +35,7 @@ class SubbasePaymentServiceProvider extends PackageServiceProvider
                 'create_payment_webhook_logs_table',
                 'add_billable_to_subscription_payments_table',
                 'create_processed_payment_events_table',
+                'upgrade_subscription_payment_decimal_columns',
             ]);
     }
 
