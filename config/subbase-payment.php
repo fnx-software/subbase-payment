@@ -19,6 +19,9 @@ return [
 
     'currency_scales' => [],
 
+    // If explicitly enabled and unresolved, deny every billing resource query.
+    'tenancy' => ['enabled' => false, 'access' => null],
+
     'mail' => [
         'send_invoice' => env('SUBBASE_PAYMENT_SEND_INVOICE', false),
     ],

@@ -20,7 +20,7 @@ jobs:
       - run: composer update --no-interaction --prefer-dist
       - name: Inspect Pint normalization for remaining legacy integration files
         run: |
-          vendor/bin/pint src/Services/PaidSubscriptionActivator.php tests/Checkout/PaidOrganizationSettlementTest.php
+          vendor/bin/pint src/Services/PaidSubscriptionActivator.php tests/Checkout/PaidOrganizationSettlementTest.php src/Support/PaymentTenancy.php src/Contracts/PaymentTenantAccess.php tests/Authorization/PaymentTenancyTest.php
           git diff -- src/Services/PaidSubscriptionActivator.php tests/Checkout/PaidOrganizationSettlementTest.php
           git diff --quiet -- src/Services/PaidSubscriptionActivator.php tests/Checkout/PaidOrganizationSettlementTest.php
       - run: vendor/bin/phpunit
