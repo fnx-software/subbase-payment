@@ -123,7 +123,7 @@ final class LicensePaymentTest extends TestCase
             $table->softDeletes();
         });
 
-        $root = dirname((new \ReflectionClass(LicenseOrder::class))->getFileName(), 2);
+        $root = dirname((new \ReflectionClass(LicenseOrder::class))->getFileName(), 3);
         foreach (['create_license_catalog_and_providers_table', 'create_license_orders_and_keys_table'] as $migration) {
             (require $root.'/database/migrations/'.$migration.'.php')->up();
         }
