@@ -21,3 +21,7 @@ Date: 2026-10-29
 ## Continued development
 
 Read `docs/UNIVERSAL-PAYMENTS.md` and `docs/PROGRESS.md` before implementation. Keep package independent of Fenix. Update tests, changelog and progress on every PR. Do not merge this branch into main until compatibility and security tests have passed.
+
+## CI style debt
+
+The upstream payment fork has 41 pre-existing Laravel Pint formatting violations across about 60 PHP files. The current workflow only gates new secure helper/contract/test files. A dedicated no-logic formatting PR must eliminate this baseline before a stable major release.

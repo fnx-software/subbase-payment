@@ -15,7 +15,7 @@ final class SubbasePaymentPermissionTest extends TestCase
     public function test_an_authenticated_user_without_explicit_grant_is_denied(): void
     {
         $this->assertFalse(
-            SubbasePaymentPermission::allows(null, 'viewAny', SubscriptionPayment::class, new User()),
+            SubbasePaymentPermission::allows(null, 'viewAny', SubscriptionPayment::class, new User),
         );
     }
 
@@ -23,10 +23,10 @@ final class SubbasePaymentPermissionTest extends TestCase
     {
         Gate::define('ViewAny:SubscriptionPayment', fn (User $actor): bool => $actor->name === 'billing admin');
 
-        $admin = new User();
+        $admin = new User;
         $admin->name = 'billing admin';
 
-        $other = new User();
+        $other = new User;
         $other->name = 'other';
 
         $this->assertTrue(
@@ -49,6 +49,6 @@ final class SubbasePaymentPermissionTest extends TestCase
 
     public function test_no_ability_cannot_be_implicitly_allowed(): void
     {
-        $this->assertFalse(SubbasePaymentPermission::allows(null, actor: new User()));
+        $this->assertFalse(SubbasePaymentPermission::allows(null, actor: new User));
     }
 }

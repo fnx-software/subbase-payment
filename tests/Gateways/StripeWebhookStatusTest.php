@@ -6,6 +6,7 @@ namespace Nafiswatsiq\SubbasePayment\Tests\Gateways;
 
 use Illuminate\Support\Facades\Config;
 use Nafiswatsiq\SubbasePayment\Gateways\StripeGateway;
+use Nafiswatsiq\SubbasePayment\Data\PaymentResult;
 use Nafiswatsiq\SubbasePayment\Tests\TestCase;
 
 final class StripeWebhookStatusTest extends TestCase
@@ -35,7 +36,7 @@ final class StripeWebhookStatusTest extends TestCase
         $this->assertSame('paid', $this->signedEvent('checkout.session.async_payment_succeeded', 'paid')->status);
     }
 
-    private function signedEvent(string $eventType, string $paymentStatus): \Nafiswatsiq\SubbasePayment\Data\PaymentResult
+    private function signedEvent(string $eventType, string $paymentStatus): PaymentResult
     {
         $payload = [
             'id' => 'evt_123',
@@ -53,7 +54,7 @@ final class StripeWebhookStatusTest extends TestCase
         $timestamp = time();
         $signature = hash_hmac('sha256', $timestamp.'.'.$body, 'whsec_test_123');
 
-        return (new StripeGateway())->handleWebhook(
+        return (new StripeGateway)->handleWebhook(
             [...$payload, '_raw_body' => $body],
             ['stripe-signature' => "t={$timestamp},v1={$signature}"],
         );
