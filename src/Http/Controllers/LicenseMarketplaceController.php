@@ -63,7 +63,7 @@ final class LicenseMarketplaceController extends Controller
             ->where('owner_type', $owner->getMorphClass())
             ->where('owner_id', (string) $owner->getKey())->firstOrFail();
 
-        if (! $provider->approved() || ! Gate::forUser($request->user())->allows('purchaseWholesaleLicenses', $provider)) {
+        if ($provider->approved() === false || Gate::forUser($request->user())->denies('purchaseWholesaleLicenses', $provider)) {
             throw new AuthorizationException('Only approved resellers can view wholesale pricing.');
         }
 
