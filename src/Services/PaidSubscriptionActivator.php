@@ -23,7 +23,7 @@ final class PaidSubscriptionActivator
 
         $type = (string) ($payment->billable_type ?? $metadata['billable_type'] ?? '');
         $id = (string) ($payment->billable_id ?? $metadata['billable_id'] ?? '');
-        if ($type === '' && !empty($metadata['user_id'])) {
+        if ($type === '' && ! empty($metadata['user_id'])) {
             $type = 'user';
             $id = (string) $metadata['user_id'];
         }
@@ -38,7 +38,7 @@ final class PaidSubscriptionActivator
         $modelClass = null;
 
         foreach ((array) $models as $alias => $allowed) {
-            if (!is_string($allowed) || !is_subclass_of($allowed, Model::class)) {
+            if (! is_string($allowed) || ! is_subclass_of($allowed, Model::class)) {
                 continue;
             }
 
@@ -50,20 +50,20 @@ final class PaidSubscriptionActivator
             }
         }
 
-        if (!$modelClass) {
+        if (! $modelClass) {
             throw new RuntimeException('Subscription owner model is not allowlisted.');
         }
 
         $owner = $modelClass::query()->whereKey($id)->lockForUpdate()->first();
 
-        if (!$owner || !method_exists($owner, 'planSubscriptions')
-            || !method_exists($owner, 'newPlanSubscription')
+        if (! $owner || ! method_exists($owner, 'planSubscriptions')
+            || ! method_exists($owner, 'newPlanSubscription')
         ) {
             throw new RuntimeException('Subscription owner is unavailable or not subscribable.');
         }
 
         $planClass = Config::get('subbase.models.plan', Plan::class);
-        if (!is_string($planClass) || !is_subclass_of($planClass, Model::class)) {
+        if (! is_string($planClass) || ! is_subclass_of($planClass, Model::class)) {
             throw new RuntimeException('Configured subscription plan model is invalid.');
         }
 
@@ -73,7 +73,7 @@ final class PaidSubscriptionActivator
         }
 
         $plan = $planClass::query()->find($planId);
-        if (!$plan) {
+        if (! $plan) {
             throw new RuntimeException('The purchased subscription plan no longer exists.');
         }
 
