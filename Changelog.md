@@ -23,3 +23,7 @@
 - Added `docs/INSTALLATION.md` and strict release gates.
 
 **Still in Draft PR:** No real gateway sandbox captures, refunds, dispute reconciliation, multi-merchant secrets, production database tests, stable tags or verified CRM/Zeno upgrades.
+
+### Payment status ordering
+
+- Prevented stale pending/approved provider events from reopening terminal failed/canceled payments; added regression test. Signed paid events are still eligible to settle a delayed capture. Cross-fork CI passed 48 tests / 100 assertions.

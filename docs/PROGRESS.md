@@ -20,7 +20,7 @@ This is the **only payment companion** for Subbase subscription billing in indep
 - [x] Payment logs may not be deleted from Filament; Payments and Events are append-oriented.
 - [x] `subbase-payment:install` no longer generates a separate legacy activation listener; existing manual registrations must be reviewed on upgrade.
 - [x] First SQLite integration tests for a paid Organization, replay, wrong billable, amount mismatch, money scales and schema migration.
-- [x] [Green compatible cross-fork CI](https://github.com/fnx-software/subbase-payment/actions/runs/40838758878) with Composer validation, PHPUnit, scoped Pint and Composer audit. Earlier green run with current financial features: 47 tests / 95 assertions.
+- [x] [Green compatible cross-fork CI](https://github.com/fnx-software/subbase-payment/actions/runs/40838975376) with Composer validation, PHPUnit, scoped Pint and Composer audit. Earlier green run with current financial features: 48 tests / 100 assertions.
 
 ## Not finished / production blockers
 
@@ -42,3 +42,8 @@ The default branch of the companion package still carries its old Composer name.
 ## Continuation
 
 Read `AGENTS.md`, `docs/INSTALLATION.md`, `docs/BACKLOG.md`, `docs/PROGRESS.md`, `docs/UNIVERSAL-PAYMENTS.md`; track all changes with tests and `Changelog.md`. Draft PR remains open until finance/legal/security gates are verified.
+
+### Most recent verified webhook state-machine check
+
+- [x] Added a regression test ensuring a delayed `pending` gateway notification cannot reopen a `failed` payment. A later *properly verified* paid event can still settle the same intent.
+- [x] The cross-fork CI run [40838975376](https://github.com/fnx-software/subbase-payment/actions/runs/40838975376) passed **48 tests / 100 assertions**, Composer validate/update/audit and targeted Pint. This is not a production gateway sandbox certification.
