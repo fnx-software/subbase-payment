@@ -20,8 +20,9 @@ final class AuthenticatedBillableResolverTest extends TestCase
 {
     public function test_it_resolves_any_persisted_authenticated_billable_model(): void
     {
-        $model = new SubscribableTestUser(['name' => 'Customer']);
+        $model = new SubscribableTestUser();
         $model->id = 15;
+        $model->name = 'Customer';
         $model->exists = true;
 
         $request = Request::create('/checkout', 'POST');

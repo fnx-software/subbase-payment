@@ -23,12 +23,18 @@ final class SubbasePaymentPermissionTest extends TestCase
     {
         Gate::define('ViewAny:SubscriptionPayment', fn (User $actor): bool => $actor->name === 'billing admin');
 
+        $admin = new User();
+        $admin->name = 'billing admin';
+
+        $other = new User();
+        $other->name = 'other';
+
         $this->assertTrue(
             SubbasePaymentPermission::allows(
                 null,
                 'viewAny',
                 SubscriptionPayment::class,
-                new User(['name' => 'billing admin']),
+                $admin,
             ),
         );
         $this->assertFalse(
@@ -36,7 +42,7 @@ final class SubbasePaymentPermissionTest extends TestCase
                 null,
                 'viewAny',
                 SubscriptionPayment::class,
-                new User(['name' => 'other']),
+                $other,
             ),
         );
     }
