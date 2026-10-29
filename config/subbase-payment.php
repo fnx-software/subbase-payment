@@ -10,7 +10,7 @@ return [
         // tenant, school, organization or other Eloquent model.
         'billable_resolver' => \Nafiswatsiq\SubbasePayment\Support\AuthenticatedBillableResolver::class,
         'billable_models' => [
-            'user' => config('auth.providers.users.model', \\Illuminate\\Foundation\\Auth\\User::class),
+            'user' => config('auth.providers.users.model', \Illuminate\Foundation\Auth\User::class),
         ],
         'subscription_name' => 'default',
         'return_url' => null,
