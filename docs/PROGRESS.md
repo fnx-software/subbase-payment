@@ -47,3 +47,18 @@ Read `AGENTS.md`, `docs/INSTALLATION.md`, `docs/BACKLOG.md`, `docs/PROGRESS.md`,
 
 - [x] Added a regression test ensuring a delayed `pending` gateway notification cannot reopen a `failed` payment. A later *properly verified* paid event can still settle the same intent.
 - [x] The cross-fork CI run [40838975376](https://github.com/fnx-software/subbase-payment/actions/runs/40838975376) passed **48 tests / 100 assertions**, Composer validate/update/audit and targeted Pint. This is not a production gateway sandbox certification.
+
+## 2026-10-29 — Retail/Wholesale reseller License Key marketplace (development)
+
+- [x] Authenticated Provider application, approved wholesale prices, bulk orders and key inventory, reseller sales and dashboard API endpoints under `/subbase-payment/licenses`.
+- [x] Server-priced order snapshots, protected Provider ownership, idempotency tokens and gateway redirect. No arbitrary client prices accepted.
+- [x] `purchase_type=license_order` handled by `VerifiedPaymentProcessor` after provider HMAC/signature verification and amount/currency matching, uses `PaidLicenseOrderFulfillment` to atomically issue only the paid quantity once.
+- [x] Distinct `LicenseOrderFulfilled` after-commit event; buying key stock cannot grant a reseller a subscription.
+- [x] Customer activation is a separate authenticated/rate-limited endpoint, bound to authorized account via `CheckoutBillableManager`.
+- [x] Integration tests exercise bulk purchasing twelve CRM keys, webhook replay, mismatched payment and tampered provider metadata.
+- [x] Host-specific tenant authorization enforced on individual order status API; key reveal/redemption/resale/dashboard require their own Gates.
+- [ ] Real provider UI, Fenix Accounts/ZITADEL E2E integration and app entitlement synchronizer are host-app work.
+- [ ] Real gateway sandbox transactions, merchant-account segregation, chargebacks/refunds/reversal and keys revocation/reissue.
+- [ ] Full PostgreSQL/MySQL and concurrent webhook/checkout tests, money compliance and invoicing, reseller agreement/tax obligations.
+
+For endpoints and setup, see `docs/LICENSE-MARKETPLACE.md` and sibling Subbase's `docs/LICENSING-RESELLERS.md`. PR remains Draft; nothing was deployed to production.

@@ -27,3 +27,11 @@
 ### Payment status ordering
 
 - Prevented stale pending/approved provider events from reopening terminal failed/canceled payments; added regression test. Signed paid events are still eligible to settle a delayed capture. Cross-fork CI passed 48 tests / 100 assertions.
+
+## 2026-10-29 — Provider wholesale and verified License Key purchases
+
+- Added an authenticated license marketplace API for retail offers, reseller applications, private wholesale pricing, bulk license checkout, post-payment inventory export, customer redemption and declared resale margin.
+- Added `LicenseCheckoutService` and `PaidLicenseOrderFulfillment`: a signed paid webhook validates transaction, currency, original order price/purchaser/Provider, then issues exact key quantity atomically and emits `LicenseOrderFulfilled` after commit.
+- Ensured wholesale inventory purchase never creates an active subscription for the reseller; entitlement is granted only on end-customer redemption.
+- Added fake-gateway integration tests for 12-license purchase, replay idempotency, mismatched payment and forged provider metadata.
+- Added `docs/LICENSE-MARKETPLACE.md` and a real-gateway/security acceptance checklist. Feature remains development-only.

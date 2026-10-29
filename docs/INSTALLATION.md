@@ -92,3 +92,10 @@ The class must implement `Nafiswatsiq\SubbasePayment\Contracts\PaymentTenantAcce
 In each fork's checkout: `composer validate --strict`, `composer audit`, `vendor/bin/phpunit`. GitHub CI uses the matching Subbase fork via a Composer local path. Full Pint is not yet green for upstream legacy source, though scoped CI is.
 
 Do **not** tag as stable, merge to main, use live merchant credentials, or upgrade CRM/Zeno until full production gates in `docs/PROGRESS.md` pass.
+
+
+## License Key / reseller routes
+
+The development build registers `routes/license.php` and serves `/subbase-payment/licenses/*` under host Laravel `auth` + `web` middleware. The host must define the relevant Gates and `checkout.billable_resolver` before exposing the storefront. Administrator approvals and plan/price management belong to the sibling Subbase Filament resources.
+
+Follow [the API and payment lifecycle guide](LICENSE-MARKETPLACE.md), and **do not enable live merchant credentials** before signed gateway sandbox tests, refunds, idempotency reconciliation and cross-tenant testing pass. The production Apps must query a shared central Fenix billing/entitlement service for cross-project keys.

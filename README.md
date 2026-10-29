@@ -384,3 +384,8 @@ composer test
 
 The MIT License (MIT). Please see [License File](LICENSE) for more information.
 
+
+
+### License key reseller marketplace
+
+Alongside standard subscriptions, this development branch now supports [retail and wholesale License Key checkout](docs/LICENSE-MARKETPLACE.md), with approved reseller accounts, paid 12-key stock issuance, own-store resale and customer redemption. A signed, matched provider webhook must authorize keys before export. Business rules, Filament catalog and key management are owned by `fnx-software/subbase`. **Not yet live gateway-certified or production ready.**
