@@ -17,6 +17,7 @@ use Nafiswatsiq\Subbase\Models\LicenseProvider;
 use Nafiswatsiq\Subbase\Services\LicenseInventoryService;
 use Nafiswatsiq\Subbase\Services\LicenseOrderService;
 use Nafiswatsiq\Subbase\Services\LicenseProviderService;
+use Nafiswatsiq\Subbase\Services\LicenseProviderDashboard;
 use Nafiswatsiq\Subbase\Services\LicenseRedemptionService;
 use Nafiswatsiq\Subbase\Services\LicenseResaleService;
 use Nafiswatsiq\SubbasePayment\PaymentManager;
@@ -73,6 +74,18 @@ final class LicenseMarketplaceController extends Controller
             ->get(['id', 'sku', 'currency', 'retail_price', 'wholesale_price', 'wholesale_minimum']);
 
         return response()->json(['provider_id' => $provider->getKey(), 'offers' => $offers]);
+    }
+
+    public function dashboard(Request $request, CheckoutBillableManager $billables, LicenseProviderDashboard $dashboard): JsonResponse
+    {
+        $owner = $billables->resolve($request);
+        $provider = LicenseProvider::query()
+            ->where('owner_type', $owner->getMorphClass())
+            ->where('owner_id', (string) $owner->getKey())
+            ->firstOrFail();
+
+        return response()->json($dashboard->summary($provider, $request->user()))
+            ->header('Cache-Control', 'private, no-store');
     }
 
     public function buy(

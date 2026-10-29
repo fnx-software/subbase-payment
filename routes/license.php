@@ -13,6 +13,7 @@ Route::middleware(['web', 'auth', 'throttle:20,1'])
         Route::get('/offers', [LicenseMarketplaceController::class, 'offers'])->name('offers');
         Route::post('/providers', [LicenseMarketplaceController::class, 'apply'])->name('providers.apply');
         Route::get('/providers/prices', [LicenseMarketplaceController::class, 'wholesalePrices'])->name('providers.prices');
+        Route::get('/providers/dashboard', [LicenseMarketplaceController::class, 'dashboard'])->name('providers.dashboard');
         Route::post('/orders', [LicenseMarketplaceController::class, 'buy'])->name('orders.buy');
         Route::get('/orders/{order}', [LicenseMarketplaceController::class, 'show'])->name('orders.show');
         Route::get('/orders/{order}/keys', [LicenseMarketplaceController::class, 'reveal'])->name('orders.keys');
