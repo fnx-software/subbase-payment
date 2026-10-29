@@ -1,3 +1,5 @@
+> **FNX Software universal billing fork:** This repository is being developed as a reusable Laravel package for standalone and multi-tenant projects, with **no mandatory Fenix Accounts dependency**. Development is on [draft PR #2](https://github.com/fnx-software/subbase-payment/pull/2), not on the stable `main` branch. The Composer package name and PHP namespace **still use the upstream `nafiswatsiq/*` identity** pending a coordinated major upgrade. Do not mistake `composer require nafiswatsiq/...` from Packagist for an installation of this fork. For current goals and implementation status, see [Progress](docs/PROGRESS.md) and [architecture](docs/UNIVERSAL-PAYMENTS.md).
+
 <img src="./.github/resources/banner-subbase-payment.jpg" alt="header" class="filament-hidden" />
 
 # Subbase Payment - Payment Gateway Plugin for Subbase

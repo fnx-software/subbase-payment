@@ -8,8 +8,8 @@ Date: 2026-10-29
 - [x] Paid checkout metadata includes billable morph type/key; legacy user metadata retained.
 - [x] Suppress destructive Payment/Webhook Log UI actions.
 - [x] Stripe async-status check; minimal retained webhook diagnostic metadata and after-commit event dispatch.
-- [x] Test source and Testbench dependency committed; **not verified passing**.
-- [ ] Verified green CI and Composer dependency audit.
+- [x] Test source and Testbench dependency committed; **verified passing in the 2026-10-29 CI run**.
+- [x] [Green CI](https://github.com/fnx-software/subbase-payment/actions/runs/40828622595): 33 PHPUnit tests / 55 assertions; Composer validation, scoped Pint and Composer audit succeeded.
 - [ ] Unique processed webhook event ledger with merchant/tenant scope.
 - [ ] Full verified paid subscription activation and owner isolation.
 - [ ] Exact decimal prices / currency scales.
@@ -25,3 +25,7 @@ Read `docs/UNIVERSAL-PAYMENTS.md` and `docs/PROGRESS.md` before implementation. 
 ## CI style debt
 
 The upstream payment fork has 41 pre-existing Laravel Pint formatting violations across about 60 PHP files. The current workflow only gates new secure helper/contract/test files. A dedicated no-logic formatting PR must eliminate this baseline before a stable major release.
+
+## Review
+
+- [Draft pull request #2](https://github.com/fnx-software/subbase-payment/pull/2) — branch remains separate from `main` pending consumer integration, full financial verification and release preparation.
