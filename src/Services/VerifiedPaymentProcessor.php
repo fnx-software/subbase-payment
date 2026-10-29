@@ -6,6 +6,7 @@ namespace Nafiswatsiq\SubbasePayment\Services;
 
 use Illuminate\Support\Facades\DB;
 use Nafiswatsiq\SubbasePayment\Data\PaymentResult;
+use Nafiswatsiq\SubbasePayment\Events\LicenseOrderFulfilled;
 use Nafiswatsiq\SubbasePayment\Events\PaymentReceived;
 use Nafiswatsiq\SubbasePayment\Support\GatewayMoney;
 use UnexpectedValueException;
@@ -74,7 +75,22 @@ final class VerifiedPaymentProcessor
                     throw new UnexpectedValueException('Gateway amount or currency does not match the payment intent.');
                 }
 
-                $subscriptionId = $this->activator->activate($payment);
+                $metadata = is_string($payment->metadata ?? null)
+                    ? (json_decode($payment->metadata, true) ?: []) : [];
+
+                $purchaseType = $metadata['purchase_type'] ?? 'subscription';
+                if ($purchaseType === 'license_order') {
+                    // The order is fulfilled in this SAME DB transaction. A
+                    // legitimate paid gateway event never creates a subscription
+                    // for the reseller; only the eventual key recipient redeems.
+                    $licenseOrder = app(PaidLicenseOrderFulfillment::class)->fulfill($payment, $metadata);
+                    $subscriptionId = null;
+                } elseif ($purchaseType === 'subscription') {
+                    $licenseOrder = null;
+                    $subscriptionId = $this->activator->activate($payment);
+                } else {
+                    throw new UnexpectedValueException('Unsupported checkout purpose.');
+                }
 
                 DB::table($paymentTable)->where('id', $payment->id)->update([
                     'payment_status' => 'paid',
@@ -84,13 +100,21 @@ final class VerifiedPaymentProcessor
                     'updated_at' => now(),
                 ]);
 
-                $updatedRecord = DB::table($paymentTable)->where('id', $payment->id)->first();
-                $metadata = is_string($updatedRecord->metadata ?? null)
-                    ? (json_decode($updatedRecord->metadata, true) ?: []) : [];
+                if ($licenseOrder !== null) {
+                    DB::afterCommit(static function () use ($licenseOrder, $driver, $result): void {
+                        event(new LicenseOrderFulfilled(
+                            (string) $licenseOrder->public_id,
+                            $driver,
+                            (string) $result->transactionId,
+                        ));
+                    });
+                } else {
+                    $updatedRecord = DB::table($paymentTable)->where('id', $payment->id)->first();
 
-                DB::afterCommit(static function () use ($updatedRecord, $metadata): void {
-                    event(new PaymentReceived($updatedRecord, $metadata));
-                });
+                    DB::afterCommit(static function () use ($updatedRecord, $metadata): void {
+                        event(new PaymentReceived($updatedRecord, $metadata));
+                    });
+                }
 
                 return 'processed';
             }

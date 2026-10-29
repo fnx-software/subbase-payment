@@ -24,7 +24,7 @@ class SubbasePaymentServiceProvider extends PackageServiceProvider
             ->hasConfigFile('subbase-payment')
             ->hasTranslations()
             ->hasViews('subbase-payment')
-            ->hasRoutes(['web', 'webhook'])
+            ->hasRoutes(['web', 'webhook', 'license'])
             ->hasCommands([
                 InstallPaymentCommand::class,
                 ResetPaymentCommand::class,
