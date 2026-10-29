@@ -1,33 +1,44 @@
-# Subbase Payment — development progress
+# FNX Subbase Payment — development progress
 
-Date: 2026-10-29
-- [x] Fork identified: `fnx-software/subbase-payment`; upstream `nafiswatsiq/subbase-payment`.
-- [x] Branch: `feat/universal-payment-foundation`, isolated from `main`.
-- [x] Native Laravel Gate fail-closed helper and explicit policy actor.
-- [x] `ResolvesCheckoutBillable` / default authenticated user resolver; checkout can resolve custom persisted Eloquent billable.
-- [x] Paid checkout metadata includes billable morph type/key; legacy user metadata retained.
-- [x] Suppress destructive Payment/Webhook Log UI actions.
-- [x] Stripe async-status check; minimal retained webhook diagnostic metadata and after-commit event dispatch.
-- [x] Test source and Testbench dependency committed; **verified passing in the 2026-10-29 CI run**.
-- [x] [Green CI](https://github.com/fnx-software/subbase-payment/actions/runs/40828948348): 36 PHPUnit tests / 58 assertions; Composer validation, scoped Pint and Composer audit succeeded.
-- [ ] Unique processed webhook event ledger with merchant/tenant scope.
-- [ ] Full verified paid subscription activation and owner isolation.
-- [ ] Exact decimal prices / currency scales.
-- [ ] Reconciliation, refunds, disputes and retry-safe subscription cycle.
-- [ ] Gateway integration with verified sandbox + live account.
-- [ ] Stable `fnx-software/*` Composer package names, tags and upgrade manual.
-- [ ] Multi-tenant Filament resources query-scoped, role/policy integration, cross-tenant tests.
+Updated: 2026-10-29. **Draft PR:** https://github.com/fnx-software/subbase-payment/pull/2.
 
-## Continued development
+## Product contract
 
-Read `docs/UNIVERSAL-PAYMENTS.md` and `docs/PROGRESS.md` before implementation. Keep package independent of Fenix. Update tests, changelog and progress on every PR. Do not merge this branch into main until compatibility and security tests have passed.
+This is the **only payment companion** for Subbase subscription billing in independent and Fenix-related Laravel projects. No Fenix Account dependency. One project may use the two Composer packages locally, or a central billing service may use the same engine and expose optional APIs. Application-specific POS/Invoice/School customer payment ledgers remain separate.
 
-## CI style debt
+## Built and verified on feature branch
 
-The upstream payment fork has 41 pre-existing Laravel Pint formatting violations across about 60 PHP files. The current workflow only gates new secure helper/contract/test files. A dedicated no-logic formatting PR must eliminate this baseline before a stable major release.
+- [x] Composer package identity is `fnx-software/subbase-payment` in the development branch; existing PHP namespace is unchanged for source compatibility.
+- [x] Cross-fork CI uses the actual development copy of `fnx-software/subbase` through a local path Composer repository rather than the original upstream version.
+- [x] Model-agnostic `ResolvesCheckoutBillable` plus `CheckoutBillableManager`, authenticated User default and explicit School/Organization host resolver.
+- [x] Enforced fail-closed Gate permissions, including tenant-aware Filament transaction/log query, route and record guards, when the optional `PaymentTenantAccess` resolver is enabled.
+- [x] Exact BCMath `GatewayMoney` ISO currency-scale conversions and widened subscription payment decimal column.
+- [x] Paid-intent billable type/key, allowlisted owner types, DB-row locking, signed-webhook-only subscription activation. Browser return never marks an invoice paid.
+- [x] Durable processed-event ledger unique by driver/account/event ID; replay does not activate subscription twice in the tested single-account deployment configuration.
+- [x] Settlement requires amount and currency matching the stored intent. Provider raw body/authorization headers are not stored in audit logs.
+- [x] Stripe async checkout status semantics and request signing, Paddle timestamp replay protection, PayPal verification excludes internal artificial data. Added amount/currency fields to gateway events.
+- [x] Payment logs may not be deleted from Filament; Payments and Events are append-oriented.
+- [x] `subbase-payment:install` no longer generates a separate legacy activation listener; existing manual registrations must be reviewed on upgrade.
+- [x] First SQLite integration tests for a paid Organization, replay, wrong billable, amount mismatch, money scales and schema migration.
+- [x] [Green compatible cross-fork CI](https://github.com/fnx-software/subbase-payment/actions/runs/40838758878) with Composer validation, PHPUnit, scoped Pint and Composer audit. Earlier green run with current financial features: 47 tests / 95 assertions.
 
-## Review
+## Not finished / production blockers
 
-- [Draft pull request #2](https://github.com/fnx-software/subbase-payment/pull/2) — branch remains separate from `main` pending consumer integration, full financial verification and release preparation.
+- [ ] Test five gateway SDK/event variants and merchant accounts in real provider sandboxes; Stripe has signature/amount fixtures but no completed merchant checkout.
+- [ ] Full merchant-account-level transaction ownership and tenant-specific credentials with secret rotation; processed-events currently use one configured merchant account per driver (default).
+- [ ] Actual refund, partial refund, dispute/chargeback, payout settlement and reconciliation ledger.
+- [ ] Multi-gateway recurring mandates, renewal job orchestration, failed charge dunning, retry/backoff and double-charge concurrency tests.
+- [ ] Additional event family fixtures (PayPal, Paddle, Midtrans, Xendit); incomplete authoritative amounts are intentionally rejected for paid settlement.
+- [ ] Real-world app / PostgreSQL / MySQL migration and end-to-end compatibility verification; tests currently use SQLite.
+- [ ] Complete host-app integration, Filament and payment form authorization, two-tenant job/export/row-level isolation.
+- [ ] Full legacy Pint cleanup (41 original style issues), supported version matrix and tagged stable release.
+- [ ] Confirm direct `composer require fnx-software/*` resolves after coordinated default-branch rename and release; existing `main` is not changed.
+- [ ] Migration test + backup for existing CRM and Zeno customer/merchant and subscription records.
 
-- [x] Extracted `CheckoutBillableManager` from the controller for independent consumer testing, with business-owner Gate fixture. Verified in CI (including authorized and unauthorized non-User Eloquent billable test cases).
+## CI/distribution warning
+
+The default branch of the companion package still carries its old Composer name. **Until coordinated merges/releases**, the payment CI clones the matching Subbase feature branch to `_packages/subbase` and injects a Composer path repository. It does not prove installation from Packagist. Do not use the feature branch with live payment credentials or replace the active CRM/Zeno dependency.
+
+## Continuation
+
+Read `AGENTS.md`, `docs/INSTALLATION.md`, `docs/BACKLOG.md`, `docs/PROGRESS.md`, `docs/UNIVERSAL-PAYMENTS.md`; track all changes with tests and `Changelog.md`. Draft PR remains open until finance/legal/security gates are verified.

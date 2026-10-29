@@ -78,3 +78,7 @@ Like the Subbase fork, this branch retains the existing `nafiswatsiq/subbase-pay
 ## Tests and status
 
 Added Testbench/PHPUnit tests for Gate authorization, the authenticated billable resolver and Stripe paid vs pending webhook status. They need a successful CI run; no gateway sandbox integration has yet been executed.
+
+## Current status superseding earlier checkpoints
+
+As of 2026-10-29, a verified payment **processor and paid-subscription activator** have been implemented: unique event handling, amount/currency matching, allowlisted Eloquent subscriber resolution and database-transaction fulfillment. This supersedes the initial note above stating that paid activation was entirely absent. Current integration tests use SQLite, not real merchant sandboxes, and do **not** prove live payment safety. For exact status use `docs/PROGRESS.md`; for safe installation use `docs/INSTALLATION.md`.
