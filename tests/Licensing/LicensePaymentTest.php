@@ -248,7 +248,7 @@ final class LicensePaymentTest extends TestCase
             $order, app(PaymentManager::class), 'Reseller Shop', 'orders@example.test', 'merchant_1',
         );
         $this->assertSame('https://sandbox.example/checkout/abc', $result->approvalUrl);
-        $this->assertSame('1200.00', (string) DB::table('subscription_payments')->value('amount'));
+        $this->assertSame(0, bccomp((string) DB::table('subscription_payments')->value('amount'), '1200.00', 4));
 
         return $order;
     }
