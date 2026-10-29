@@ -82,6 +82,8 @@ class MidtransGateway implements PaymentGatewayInterface, ValidatesConfiguration
                     ? $payload['transaction_id'].':'.$payload['transaction_status']
                     : ($payload['transaction_id'] ?? $payload['order_id'] ?? null),
                 'event_type' => $payload['transaction_status'] ?? null,
+                'verified_amount' => isset($payload['gross_amount']) ? (string) $payload['gross_amount'] : null,
+                'verified_currency' => isset($payload['currency']) ? strtoupper((string) $payload['currency']) : 'IDR',
                 'payload' => $payload,
             ],
         );

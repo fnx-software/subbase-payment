@@ -8,6 +8,7 @@ use Nafiswatsiq\SubbasePayment\Contracts\PaymentGatewayInterface;
 use Nafiswatsiq\SubbasePayment\Contracts\ValidatesConfiguration;
 use Nafiswatsiq\SubbasePayment\Data\PaymentRequest;
 use Nafiswatsiq\SubbasePayment\Data\PaymentResult;
+use Nafiswatsiq\SubbasePayment\Support\GatewayMoney;
 use Nafiswatsiq\SubbasePayment\Exceptions\InvalidWebhookSignatureException;
 use Nafiswatsiq\SubbasePayment\Exceptions\PaymentConfigurationException;
 use RuntimeException;
@@ -128,6 +129,10 @@ class PaddleGateway implements PaymentGatewayInterface, ValidatesConfiguration
             [
                 'event_id' => $payload['event_id'] ?? null,
                 'event_type' => $eventType,
+                'verified_amount' => isset($data['details']['totals']['grand_total'], $data['currency_code'])
+                    ? GatewayMoney::minorUnits((string) $data['details']['totals']['grand_total'], (string) $data['currency_code'])
+                    : null,
+                'verified_currency' => isset($data['currency_code']) ? strtoupper((string) $data['currency_code']) : null,
                 'payload' => $payload,
             ],
         );
@@ -212,11 +217,6 @@ class PaddleGateway implements PaymentGatewayInterface, ValidatesConfiguration
 
     private function toMinorUnits(float|int|string $amount, string $currency): int
     {
-        $zeroDecimalCurrencies = ['BIF', 'CLP', 'DJF', 'GNF', 'JPY', 'KMF', 'KRW', 'MGA', 'PYG', 'RWF', 'UGX', 'VND', 'VUV', 'XAF', 'XOF', 'XPF'];
-        if (in_array(strtoupper($currency), $zeroDecimalCurrencies, true)) {
-            return (int) round((float) $amount);
-        }
-
-        return (int) round((float) $amount * 100);
+        return GatewayMoney::toMinorUnits((string) $amount, $currency);
     }
 }

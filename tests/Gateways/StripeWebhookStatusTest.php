@@ -46,6 +46,8 @@ final class StripeWebhookStatusTest extends TestCase
                     'id' => 'cs_test',
                     'object' => 'checkout.session',
                     'payment_status' => $paymentStatus,
+                    'amount_total' => 1000,
+                    'currency' => 'usd',
                 ],
             ],
         ];

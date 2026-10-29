@@ -106,6 +106,10 @@ class PaypalGateway implements PaymentGatewayInterface, CapturesPayments, Valida
             [
                 'event_id' => $payload['id'] ?? null,
                 'event_type' => $eventType,
+                'verified_amount' => isset($payload['resource']['amount']['value'])
+                    ? (string) $payload['resource']['amount']['value'] : null,
+                'verified_currency' => isset($payload['resource']['amount']['currency_code'])
+                    ? strtoupper((string) $payload['resource']['amount']['currency_code']) : null,
                 'payload' => $payload,
             ],
         );
