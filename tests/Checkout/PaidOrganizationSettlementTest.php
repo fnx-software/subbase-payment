@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Nafiswatsiq\SubbasePayment\Tests\Checkout;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User;
+use RuntimeException;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -161,9 +163,9 @@ final class PaidOrganizationSettlementTest extends TestCase
 
     public function test_unallowlisted_model_is_rejected_without_marking_paid(): void
     {
-        config(['subbase-payment.checkout.billable_models' => ['user' => \Illuminate\Foundation\Auth\User::class]]);
+        config(['subbase-payment.checkout.billable_models' => ['user' => User::class]]);
 
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(RuntimeException::class);
 
         try {
             (new VerifiedPaymentProcessor(app(PaidSubscriptionActivator::class)))
