@@ -110,10 +110,22 @@ class CheckoutController extends Controller
 
         $planModel = config('subbase.models.plan', \Nafiswatsiq\Subbase\Models\Plan::class);
         $plan = $planModel::query()->where('slug', $plan)->active()->firstOrFail();
-        $currency = $planModel::currencyFromLocale(app()->getLocale());
-        $pricing = PlanPriceHelper::resolveWithDiscounts($plan, $currency);
+        $currency = strtoupper((string) ($request->input('currency') ?: $plan->currency));
+        if (! preg_match('/^[A-Z]{3}$/D', $currency)
+            || ($currency !== strtoupper((string) $plan->currency) && ! $plan->hasCurrencyPrice($currency))
+        ) {
+            throw ValidationException::withMessages(['currency' => 'The selected billing currency is unavailable.']);
+        }
 
-        if ((float) $pricing['final_amount'] <= 0) {
+        if (! method_exists(PlanPriceHelper::class, 'resolveExactWithDiscounts')) {
+            throw ValidationException::withMessages([
+                'payment' => 'Exact pricing is not available. Install the matching FNX Subbase package before checkout.',
+            ]);
+        }
+
+        $pricing = PlanPriceHelper::resolveExactWithDiscounts($plan, $currency);
+
+        if (bccomp($pricing['final_amount'], '0', 4) <= 0) {
             return $this->activateFreePlan($billable, $plan, $currency, $pricing);
         }
 
@@ -131,7 +143,7 @@ class CheckoutController extends Controller
 
             $result = $payments->driver()->charge(new PaymentRequest(
                 $plan,
-                number_format((float) $pricing['final_amount'], 2, '.', ''),
+                $pricing['final_amount'],
                 $currency,
                 $request->string('name')->toString(),
                 $request->string('email')->toString(),
@@ -143,8 +155,16 @@ class CheckoutController extends Controller
             throw ValidationException::withMessages(['payment' => 'Unable to start payment. Please try again later.']);
         }
 
+        if (! is_string($result->transactionId) || $result->transactionId === ''
+            || ! is_string($result->approvalUrl) || ! str_starts_with($result->approvalUrl, 'https://')
+        ) {
+            throw ValidationException::withMessages(['payment' => 'Payment gateway returned an invalid checkout session.']);
+        }
+
         DB::table(config('subbase-payment.tables.subscription_payments', 'subscription_payments'))->insert([
             'gateway_driver' => config('subbase-payment.driver'),
+            'billable_type' => $billable->getMorphClass(),
+            'billable_id' => (string) $billable->getKey(),
             'gateway_transaction_id' => $result->transactionId,
             'payment_status' => $result->status,
             'customer_name' => $request->string('name')->toString(),
@@ -209,6 +229,8 @@ class CheckoutController extends Controller
 
             DB::table($table)->insert([
                 'subscription_id' => $subscription->id,
+                'billable_type' => $user->getMorphClass(),
+                'billable_id' => (string) $user->getKey(),
                 'gateway_driver' => 'free',
                 'gateway_transaction_id' => 'free_' . (string) Str::uuid(),
                 'payment_status' => 'paid',
@@ -271,59 +293,31 @@ class CheckoutController extends Controller
 
     public function returned(Request $request, string $plan, PaymentManager $payments)
     {
+        // Provider redirects are not a payment confirmation. Only a signed
+        // and reconciled webhook may activate an entitlement or mark paid.
         $orderId = $request->string('token')->toString()
             ?: $request->string('payment_id')->toString()
             ?: $request->string('_ptxn')->toString();
-        $user = Auth::user();
 
-        if ($user && $orderId) {
-            $table = config('subbase-payment.tables.subscription_payments', 'subscription_payments');
-            $payment = DB::table($table)
+        $status = 'pending';
+        if (Auth::check() && $orderId !== '') {
+            $payment = DB::table(config('subbase-payment.tables.subscription_payments', 'subscription_payments'))
+                ->where('gateway_driver', config('subbase-payment.driver'))
                 ->where('gateway_transaction_id', $orderId)
-                ->whereIn('payment_status', ['pending', 'approved'])
                 ->first();
+
             $metadata = $payment && is_string($payment->metadata)
-                ? (json_decode($payment->metadata, true) ?? [])
-                : [];
+                ? (json_decode($payment->metadata, true) ?: []) : [];
 
-            if ($payment && (string) ($metadata['user_id'] ?? '') === (string) $user->getAuthIdentifier()) {
-                try {
-                    $driver = $payments->driver();
-
-                    if ($driver instanceof \Nafiswatsiq\SubbasePayment\Contracts\CapturesPayments) {
-                        $capture = $driver->capture($orderId);
-
-                        if ($capture->status === 'paid') {
-                            DB::transaction(function () use ($table, $payment): void {
-                                DB::table($table)
-                                    ->where('id', $payment->id)
-                                    ->whereIn('payment_status', ['pending', 'approved'])
-                                    ->lockForUpdate()
-                                    ->update([
-                                        'payment_status' => 'completed',
-                                        'updated_at' => now(),
-                                    ]);
-                            });
-                        }
-                    }
-                } catch (\Throwable $exception) {
-                    report($exception);
-                }
+            if ($payment && (string) ($metadata['user_id'] ?? '') === (string) Auth::id()) {
+                $status = $payment->payment_status === 'paid' ? 'success' : 'pending';
             }
-        }
-
-        $redirectTarget = null;
-        $returnUrl = config('subbase-payment.checkout.return_url');
-        if ($returnUrl) {
-            $redirectTarget = Str::startsWith($returnUrl, 'http')
-                ? $returnUrl
-                : route($returnUrl, $plan);
         }
 
         return view('subbase-payment::status', [
             'plan' => $plan,
-            'status' => 'pending',
-            'redirectUrl' => $redirectTarget,
+            'status' => $status,
+            'redirectUrl' => null,
         ]);
     }
 
