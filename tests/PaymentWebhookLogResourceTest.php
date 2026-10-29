@@ -15,8 +15,8 @@ class PaymentWebhookLogResourceTest extends TestCase
         $this->assertFalse(PaymentWebhookLogResource::canEdit(new PaymentWebhookLog()));
     }
 
-    public function test_permission_fallback_allows_access_without_spatie()
+    public function test_permission_fallback_denies_access_without_a_gate()
     {
-        $this->assertTrue(SubbasePaymentPermission::allows(null, 'viewAny', PaymentWebhookLog::class));
+        $this->assertFalse(SubbasePaymentPermission::allows(null, 'viewAny', PaymentWebhookLog::class));
     }
 }

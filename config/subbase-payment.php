@@ -6,9 +6,21 @@ return [
     'checkout' => [
         'path' => 'checkout',
         'middleware' => ['web'],
+        // Resolve the subscription owner; override in a host app to bill a
+        // tenant, school, organization or other Eloquent model.
+        'billable_resolver' => \Nafiswatsiq\SubbasePayment\Support\AuthenticatedBillableResolver::class,
+        'billable_models' => [
+            'user' => config('auth.providers.users.model', \Illuminate\Foundation\Auth\User::class),
+        ],
+        'subscription_name' => 'default',
         'return_url' => null,
         'cancel_url' => null,
     ],
+
+    'currency_scales' => [],
+
+    // If explicitly enabled and unresolved, deny every billing resource query.
+    'tenancy' => ['enabled' => false, 'access' => null],
 
     'mail' => [
         'send_invoice' => env('SUBBASE_PAYMENT_SEND_INVOICE', false),
@@ -17,6 +29,7 @@ return [
     'tables' => [
         'subscription_payments' => 'subscription_payments',
         'payment_webhook_logs' => 'payment_webhook_logs',
+        'processed_payment_events' => 'subbase_processed_payment_events',
     ],
 
     'permissions' => [

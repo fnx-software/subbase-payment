@@ -1,3 +1,5 @@
+> **FNX Software Subbase Payment fork:** Reusable subscription checkout for independent/tenant-based Laravel apps. Feature-branch Composer identity: `fnx-software/subbase-payment`; PHP namespace remains `Nafiswatsiq\\SubbasePayment`. See [installation](docs/INSTALLATION.md), [progress](docs/PROGRESS.md), and [draft PR #2](https://github.com/fnx-software/subbase-payment/pull/2). **Development-only; not verified for live payments.**
+
 <img src="./.github/resources/banner-subbase-payment.jpg" alt="header" class="filament-hidden" />
 
 # Subbase Payment - Payment Gateway Plugin for Subbase
@@ -382,3 +384,8 @@ composer test
 
 The MIT License (MIT). Please see [License File](LICENSE) for more information.
 
+
+
+### License key reseller marketplace
+
+Alongside standard subscriptions, this development branch now supports [retail and wholesale License Key checkout](docs/LICENSE-MARKETPLACE.md), with approved reseller accounts, paid 12-key stock issuance, own-store resale and customer redemption. A signed, matched provider webhook must authorize keys before export. Business rules, Filament catalog and key management are owned by `fnx-software/subbase`. **Not yet live gateway-certified or production ready.**

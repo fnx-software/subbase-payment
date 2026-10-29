@@ -24,7 +24,7 @@ class SubbasePaymentServiceProvider extends PackageServiceProvider
             ->hasConfigFile('subbase-payment')
             ->hasTranslations()
             ->hasViews('subbase-payment')
-            ->hasRoutes(['web', 'webhook'])
+            ->hasRoutes(['web', 'webhook', 'license'])
             ->hasCommands([
                 InstallPaymentCommand::class,
                 ResetPaymentCommand::class,
@@ -33,6 +33,9 @@ class SubbasePaymentServiceProvider extends PackageServiceProvider
             ->hasMigrations([
                 'create_subscription_payments_table',
                 'create_payment_webhook_logs_table',
+                'add_billable_to_subscription_payments_table',
+                'create_processed_payment_events_table',
+                'upgrade_subscription_payment_decimal_columns',
             ]);
     }
 

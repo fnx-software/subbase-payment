@@ -87,6 +87,8 @@ class XenditGateway implements PaymentGatewayInterface, ValidatesConfiguration
                     ? $payload['id'].':'.$payload['status']
                     : ($payload['id'] ?? null),
                 'event_type' => $payload['status'] ?? null,
+                'verified_amount' => isset($payload['paid_amount']) ? (string) $payload['paid_amount'] : (isset($payload['amount']) ? (string) $payload['amount'] : null),
+                'verified_currency' => isset($payload['currency']) ? strtoupper((string) $payload['currency']) : null,
                 'payload' => $payload,
             ],
         );

@@ -10,6 +10,8 @@ use Nafiswatsiq\SubbasePayment\Filament\Resources\SubscriptionPayments\Schemas\S
 use Nafiswatsiq\SubbasePayment\Filament\Resources\SubscriptionPayments\Tables\SubscriptionPaymentsTable;
 use Nafiswatsiq\SubbasePayment\Models\SubscriptionPayment;
 use Nafiswatsiq\SubbasePayment\Support\SubbasePaymentPermission;
+use Nafiswatsiq\SubbasePayment\Support\PaymentTenancy;
+use Illuminate\Database\Eloquent\Builder;
 use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
@@ -47,17 +49,18 @@ class SubscriptionPaymentResource extends Resource
 
     public static function canDelete(Model $record): bool
     {
-        return SubbasePaymentPermission::allows(config('subbase-payment.permissions.subscription_payment'), 'delete', static::getModel());
+        // Financial transaction and audit records are append-only.
+        return false;
     }
 
     public static function canDeleteAny(): bool
     {
-        return SubbasePaymentPermission::allows(config('subbase-payment.permissions.subscription_payment'), 'deleteAny', static::getModel());
+        return false;
     }
 
     public static function canView(Model $record): bool
     {
-        return SubbasePaymentPermission::allows(config('subbase-payment.permissions.subscription_payment'), 'view', static::getModel());
+        return SubbasePaymentPermission::allows(config('subbase-payment.permissions.subscription_payment'), 'view', static::getModel(), null, $record);
     }
 
     public static function getNavigationLabel(): string
@@ -78,6 +81,16 @@ class SubscriptionPaymentResource extends Resource
     public static function table(Table $table): Table
     {
         return SubscriptionPaymentsTable::configure($table);
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return PaymentTenancy::scope(parent::getEloquentQuery());
+    }
+
+    public static function getRecordRouteBindingEloquentQuery(): Builder
+    {
+        return PaymentTenancy::scope(parent::getRecordRouteBindingEloquentQuery());
     }
 
     public static function getPages(): array

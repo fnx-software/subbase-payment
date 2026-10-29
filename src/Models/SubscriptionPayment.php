@@ -13,7 +13,7 @@ class SubscriptionPayment extends Model
     protected function casts(): array
     {
         return [
-            'amount' => 'decimal:2',
+            'amount' => 'decimal:4',
             'verified_at' => 'datetime',
             'metadata' => 'array',
         ];

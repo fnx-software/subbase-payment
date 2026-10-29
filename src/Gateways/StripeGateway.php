@@ -9,6 +9,7 @@ use Nafiswatsiq\SubbasePayment\Contracts\PaymentGatewayInterface;
 use Nafiswatsiq\SubbasePayment\Contracts\ValidatesConfiguration;
 use Nafiswatsiq\SubbasePayment\Data\PaymentRequest;
 use Nafiswatsiq\SubbasePayment\Data\PaymentResult;
+use Nafiswatsiq\SubbasePayment\Support\GatewayMoney;
 use Nafiswatsiq\SubbasePayment\Exceptions\InvalidWebhookSignatureException;
 use Nafiswatsiq\SubbasePayment\Exceptions\PaymentConfigurationException;
 use RuntimeException;
@@ -87,15 +88,21 @@ class StripeGateway implements PaymentGatewayInterface, CapturesPayments, Valida
         $this->verifyWebhook($payload, $headers);
 
         $eventType = (string) ($payload['type'] ?? '');
-        $status = match ($eventType) {
-            'checkout.session.completed' => 'paid',
-            'checkout.session.expired' => 'failed',
-            'charge.refunded' => 'canceled',
-            default => 'pending',
-        };
-
         $object = $payload['data']['object'] ?? [];
         $isCheckoutSession = ($object['object'] ?? '') === 'checkout.session';
+
+        // Some payment methods complete checkout before the funds settle.
+        // Only verified paid status or async success can finalize a payment.
+        $status = match ($eventType) {
+            'checkout.session.completed' => ($object['payment_status'] ?? null) === 'paid'
+                ? 'paid'
+                : 'pending',
+            'checkout.session.async_payment_succeeded' => 'paid',
+            'checkout.session.async_payment_failed' => 'failed',
+            'checkout.session.expired' => 'canceled',
+            // Refunds and disputes require their own settlement ledger.
+            default => 'pending',
+        };
         $transactionId = $isCheckoutSession ? ($object['id'] ?? null) : null;
 
         return new PaymentResult(
@@ -105,6 +112,12 @@ class StripeGateway implements PaymentGatewayInterface, CapturesPayments, Valida
             [
                 'event_id' => $payload['id'] ?? null,
                 'event_type' => $eventType,
+                'verified_amount' => $isCheckoutSession && is_int($object['amount_total'] ?? null) && ! empty($object['currency'])
+                    ? GatewayMoney::minorUnits($object['amount_total'], strtoupper($object['currency']))
+                    : null,
+                'verified_currency' => $isCheckoutSession && ! empty($object['currency'])
+                    ? strtoupper($object['currency'])
+                    : null,
                 'payload' => $payload,
             ],
         );
@@ -176,13 +189,6 @@ class StripeGateway implements PaymentGatewayInterface, CapturesPayments, Valida
 
     private function toMinorUnits(string $amount, string $currency): int
     {
-        // Zero-decimal currencies are expressed as whole units in Stripe.
-        $zeroDecimal = ['bif', 'clp', 'djf', 'gnf', 'jpy', 'kmf', 'krw', 'mga', 'pyg', 'rwf', 'ugx', 'vnd', 'vuv', 'xaf', 'xof', 'xpf'];
-
-        if (in_array(strtolower($currency), $zeroDecimal, true)) {
-            return (int) round((float) $amount);
-        }
-
-        return (int) round((float) $amount * 100);
+        return GatewayMoney::toMinorUnits($amount, $currency);
     }
 }
